@@ -1,8 +1,12 @@
+# Игорь, привет!)
+# У меня автотесты не проходят при передаче на проверку...
+# Изначально импорт был в 12 строке, автотесты пишут неправильная позиция...
+from core.models import PublishedModel
+
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
-from core.models import PublishedModel
 from .constants import TITLE_SLICE
 
 User = get_user_model()
