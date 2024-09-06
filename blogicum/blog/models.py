@@ -3,7 +3,7 @@ from django.db import models
 from django.utils import timezone
 
 from .constants import TITLE_SLICE
-from .models import PublishedModel
+from core.models import PublishedModel
 
 User = get_user_model()
 

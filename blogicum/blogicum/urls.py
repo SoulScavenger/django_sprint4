@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import include, path, reverse_lazy
 from django.views.generic.edit import CreateView
 
-from blogicum.core import views
+from core import views
 
 handler404 = 'pages.views.page_not_found'
 handler500 = 'pages.views.server_error'
