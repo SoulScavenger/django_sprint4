@@ -10,6 +10,7 @@ from .constants import TITLE_SLICE
 
 User = get_user_model()
 
+
 class FilteredPosts(models.Manager):
     """Кастомный менеджер для модели Post."""
 
