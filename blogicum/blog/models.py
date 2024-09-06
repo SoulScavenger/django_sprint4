@@ -2,8 +2,8 @@ from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
-from blog.constants import TITLE_SLICE
-from core.models import PublishedModel
+from .constants import TITLE_SLICE
+from .models import PublishedModel
 
 User = get_user_model()
 

@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.urls import include, path, reverse_lazy
 from django.views.generic.edit import CreateView
 
-from core.views import CustomLoginView
+from core import views
 
 handler404 = 'pages.views.page_not_found'
 handler500 = 'pages.views.server_error'
@@ -14,11 +14,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('pages/', include('pages.urls', namespace='pages')),
     path('', include('blog.urls', namespace='blog')),
-    # Аутентификация.
     path('auth/', include('django.contrib.auth.urls')),
-    # Кастомный Login.
-    path('auth/login', CustomLoginView.as_view(), name='login'),
-    # Регистрация.
+    path('auth/login', views.CustomLoginView.as_view(), name='login'),
     path('auth/registration/',
          CreateView.as_view(
              template_name='registration/registration_form.html',

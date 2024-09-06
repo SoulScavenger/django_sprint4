@@ -9,12 +9,11 @@ from django.urls import reverse
 from django.views.generic import (CreateView, DeleteView, DetailView, ListView,
                                   UpdateView)
 
-from blog.constants import POST_COUNT
-from blog.forms import CommentForm, PostForm, UserUpdateFormUpdate
-from blog.models import Category, Comment, Post, User
+from .constants import POST_COUNT
+from .forms import CommentForm, PostForm, UserUpdateFormUpdate
+from .models import Category, Comment, Post, User
 
 
-# VIEW-классы для категорий.
 class CategoryDetailView(DetailView):
     """View-класс для просмотра постов по категориям."""
 
@@ -36,7 +35,6 @@ class CategoryDetailView(DetailView):
         return context
 
 
-# VIEW-Классы для публикаций.
 class PostListView(ListView):
     """View-класс списка публикаций."""
 
@@ -127,7 +125,6 @@ class PostDeleteView(PostCrudCustomMixin, UserPassesTestMixin, DeleteView):
         return object.author == self.request.user
 
 
-# VIEW-Классы для комментирования.
 class CommentCrudCustomMixin(LoginRequiredMixin):
     """Кастомный класс Миксин для CRUD операций для Comments."""
 
@@ -206,7 +203,6 @@ class CommentDeleteView(
                        kwargs={'post_id': self.object.publication_id})
 
 
-# VIEW-Классы для профиля.
 class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     """View-класс для редактирования профиля пользователя."""
 
