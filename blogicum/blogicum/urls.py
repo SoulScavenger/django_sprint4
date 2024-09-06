@@ -2,7 +2,6 @@
 # У меня автотесты не проходят при передаче на проверку...
 # Изначально импорт был в 12 строке, автотесты пишут неправильная позиция...
 from core import views
-
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
