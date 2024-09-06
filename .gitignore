@@ -147,6 +147,11 @@ dmypy.json
 
 # папки со статикой и медиа
 media/
+blogicum/static_dev
 
 sent_emails/
 
+# Проект на функциях
+narabotki.py
+blogicum_draft/
+posts_images/
