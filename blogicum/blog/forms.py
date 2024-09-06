@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import Comment, Post, User
+from blog.models import Comment, Post, User
 
 
 class PostForm(forms.ModelForm):
@@ -10,7 +10,9 @@ class PostForm(forms.ModelForm):
         model = Post
         exclude = ('author',)
         widgets = {
-            'pub_date': forms.DateInput(attrs={'type': 'date'})
+            'pub_date': forms.DateTimeInput(format=('%Y-%m-%d %H:%M'),
+                                            attrs={'type': 'datetime-local'}),
+            'text': forms.Textarea({'cols': '22', 'rows': '5'}),
         }
 
 
@@ -27,3 +29,6 @@ class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
         fields = ('text',)
+        widgets = {
+            'text': forms.Textarea({'cols': '22', 'rows': '5'}),
+        }

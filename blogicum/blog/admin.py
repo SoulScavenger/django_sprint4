@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Category, Location, Post
+from blog.models import Category, Comment, Location, Post
 
 
 @admin.register(Category)
@@ -66,6 +66,30 @@ class PostAdmin(admin.ModelAdmin):
                    'is_published')
 
     list_display_links = ('title', )
+
+
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        'author',
+        'text',
+        'publication',
+        'created_at',
+
+    )
+
+    list_editable = (
+        'text',
+    )
+
+    list_filter = (
+        'publication',
+    )
+
+    search_fields = (
+        'author__username',
+        'publication__title'
+    )
 
 
 admin.site.empty_value_display = 'Не задано'

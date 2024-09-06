@@ -1,26 +1,11 @@
-# Игорь, привет!)
-# У меня автотесты не проходят при передаче на проверку...
-# Изначально импорт был в 12 строке, автотесты пишут неправильная позиция...
-from core.models import PublishedModel
 from django.contrib.auth import get_user_model
 from django.db import models
-from django.utils import timezone
 
-from .constants import TITLE_SLICE
+from blog.constants import TITLE_SLICE
+from blog.managers import FilteredPosts
+from core.models import PublishedModel
 
 User = get_user_model()
-
-
-class FilteredPosts(models.Manager):
-    """Кастомный менеджер для модели Post."""
-
-    def get_queryset(self) -> models.QuerySet:
-        """Получить отфильтрованный QuerySet."""
-        return Post.objects.select_related(
-            'author', 'location', 'category'
-        ).filter(is_published=True,
-                 pub_date__lte=timezone.now(),
-                 category__is_published=True)
 
 
 class Category(PublishedModel):
@@ -132,6 +117,10 @@ class Post(PublishedModel):
         """Именует объекты значением из поля title."""
         return self.title[:TITLE_SLICE]
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('blog:post_detail', kwargs={'post_id': self.pk})
+
 
 class Comment(models.Model):
     """Класс модели для Комментариев."""
@@ -149,5 +138,11 @@ class Comment(models.Model):
                                verbose_name='Автор')
 
     class Meta:
+        verbose_name = 'комментарий'
+        verbose_name_plural = 'Комментарии'
         ordering = ('created_at',)
         default_related_name = 'comments'
+
+    def __str__(self):
+        """Именует объекты значением из поля title."""
+        return self.text[:TITLE_SLICE]
