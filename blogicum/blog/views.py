@@ -1,13 +1,12 @@
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models.base import Model as Model
 from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
 
-from blog.forms import CommentForm, PostForm, UserUpdateFormUpdate
+from blog.forms import CommentForm, PostForm, UserUpdateForm
 from blog.mixins import (CommentCrudMixin, PostAccessEditMixin, PostCrudMixin,
                          PostViewMixin)
 from blog.models import Category, Post, User
@@ -17,18 +16,22 @@ class CategoryDetailView(PostViewMixin):
     """View-класс для просмотра постов по категориям."""
 
     template_name = 'blog/category.html'
+    category = None
+
+    def set_category(self):
+        self.category = get_object_or_404(Category,
+                                          slug=self.kwargs['category_slug'],
+                                          is_published=True)
 
     def get_queryset(self):
+        self.set_category()
         return Post.filtered.filter(
-            category__slug=self.kwargs['category_slug']
+            category=self.category
         )
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
         context = super().get_context_data(**kwargs)
-        category = get_object_or_404(Category,
-                                     slug=self.kwargs['category_slug'],
-                                     is_published=True)
-        context['category'] = category
+        context['category'] = self.category
         return context
 
 
@@ -128,22 +131,16 @@ class CommentDeleteView(
         return None
 
 
-class ProfileUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     """View-класс для редактирования профиля пользователя."""
 
     model = User
-    form_class = UserUpdateFormUpdate
-    slug_field = 'username'
-    slug_url_kwarg = 'username'
+    form_class = UserUpdateForm
     template_name = 'blog/user.html'
 
-    def get_object(self) -> Model:
+    def get_object(self):
         return get_object_or_404(super().get_queryset(),
-                                 username=self.request.user.username)
-
-    def test_func(self):
-        object = self.get_object()
-        return object.username == self.request.user.username
+                                 username=self.request.user)
 
     def get_success_url(self):
         return reverse('blog:profile',
@@ -156,15 +153,16 @@ class ProfileDetailView(PostViewMixin):
     template_name = 'blog/profile.html'
 
     def get_queryset(self) -> QuerySet[Any]:
-        if self.kwargs['username'] == self.request.user.username:
+        author = get_object_or_404(User, username=self.kwargs['username'])
+        if author.username == self.request.user.username:
             return Post.objects.select_related(
                 'author', 'category', 'location'
             ).filter(
-                author__username=self.kwargs['username']
+                author=author
             )
         else:
             return Post.filtered.filter(
-                author__username=self.kwargs['username']
+                author=author
             )
 
     def get_context_data(self, **kwargs: Any) -> dict[str, Any]:

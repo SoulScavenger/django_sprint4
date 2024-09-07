@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 
 from blog.constants import TITLE_SLICE
 from blog.managers import FilteredPosts
@@ -118,7 +119,7 @@ class Post(PublishedModel):
         return self.title[:TITLE_SLICE]
 
     def get_absolute_url(self):
-        from django.urls import reverse
+
         return reverse('blog:post_detail', kwargs={'post_id': self.pk})
 
 
@@ -144,5 +145,8 @@ class Comment(models.Model):
         default_related_name = 'comments'
 
     def __str__(self):
-        """Именует объекты значением из поля title."""
-        return self.text[:TITLE_SLICE]
+        """Именование объекта."""
+        return (f'Комментарий автора: {self.author} '
+                f'к Посту: {self.publication} '
+                f'Текст: {self.text[:TITLE_SLICE]}'
+                )

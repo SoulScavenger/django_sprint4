@@ -91,5 +91,7 @@ class CommentAdmin(admin.ModelAdmin):
         'publication__title'
     )
 
+    list_display_links = ('author', )
+
 
 admin.site.empty_value_display = 'Не задано'

@@ -16,7 +16,7 @@ class PostForm(forms.ModelForm):
         }
 
 
-class UserUpdateFormUpdate(forms.ModelForm):
+class UserUpdateForm(forms.ModelForm):
 
     class Meta:
         model = User
