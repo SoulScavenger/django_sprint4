@@ -1,7 +1,6 @@
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.db.models.query import QuerySet
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.views.generic import CreateView, DeleteView, DetailView, UpdateView
@@ -25,11 +24,10 @@ class CategoryDetailView(PostViewMixin):
 
     def get_queryset(self):
         self.set_category()
-        return Post.filtered.filter(
-            category=self.category
-        )
+        qs = Post.filtered.filter(category=self.category)
+        return self.get_comment_count(qs)
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['category'] = self.category
         return context
@@ -42,7 +40,8 @@ class PostListView(PostViewMixin):
 
     def get_queryset(self):
         """Получить отфильтрованный QS из модели Post."""
-        return Post.filtered.all()
+        qs = Post.filtered.all()
+        return self.get_comment_count(qs)
 
 
 class PostDetailView(DetailView):
@@ -139,8 +138,7 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
     template_name = 'blog/user.html'
 
     def get_object(self):
-        return get_object_or_404(super().get_queryset(),
-                                 username=self.request.user)
+        return self.request.user
 
     def get_success_url(self):
         return reverse('blog:profile',
@@ -152,20 +150,17 @@ class ProfileDetailView(PostViewMixin):
 
     template_name = 'blog/profile.html'
 
-    def get_queryset(self) -> QuerySet[Any]:
+    def get_queryset(self):
         author = get_object_or_404(User, username=self.kwargs['username'])
+        qs = Post.filtered.filter(author=author)
         if author.username == self.request.user.username:
-            return Post.objects.select_related(
+            qs = Post.objects.select_related(
                 'author', 'category', 'location'
-            ).filter(
-                author=author
-            )
-        else:
-            return Post.filtered.filter(
-                author=author
-            )
+            ).filter(author=author)
 
-    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        return self.get_comment_count(qs)
+
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         profile = get_object_or_404(User, username=self.kwargs['username'])
         context['profile'] = profile

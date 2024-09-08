@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Count
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import ListView
@@ -10,6 +11,11 @@ from blog.models import Comment, Post
 class PostViewMixin(ListView):
     model = Post
     paginate_by = POST_COUNT
+
+    def get_comment_count(self, qs):
+        """Добавляет поле с кол-ом комментариев к посту."""
+        return qs.annotate(comment_count=Count('comments')
+                           ).order_by('-pub_date')
 
 
 class PostCrudMixin(LoginRequiredMixin):
